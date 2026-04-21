@@ -99,7 +99,7 @@ The k=1 curve is entirely separated from k≥2. Adding one intermediate hop caus
 
 ## 5. Discussion
  
-**Direct spatial relations are encoded early and linearly.** : The 0.715 L1 accuracy for k=1 examples is a strong positive result: the concatenated entity representations carry enough directional geometry immediately after the first transformer block for a linear classifier to recover the answer at well above chance. This finding is consistent with those in other probing studies, which suggest that surface-level semantic features are established in early layers.
+**Direct spatial relations are encoded early and linearly.**: The 0.715 L1 accuracy for k=1 examples is a strong positive result: the concatenated entity representations carry enough directional geometry immediately after the first transformer block for a linear classifier to recover the answer at well above chance. This finding is consistent with those in other probing studies, which suggest that surface-level semantic features are established in early layers.
  
 **Deeper layers transform rather than preserve this signal.**:  The monotonic decline from L1 to L32 (0.715 → 0.636 for k=1) suggests that later layers are transforming the early encoding into a format suited to next-token prediction, which is geometrically less clean for a direction-classification probe.
  
