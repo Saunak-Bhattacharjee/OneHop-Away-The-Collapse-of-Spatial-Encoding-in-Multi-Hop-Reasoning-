@@ -3,7 +3,7 @@ A probing study of spatial relation encoding across transformer layers in Pythia
 
 ## Abstract
  
-We investigate how spatial directional relations are encoded in the internal representations of a large language model (Pythia-2.8B) across all 32 transformer layers. Using linear probing classifiers trained on entity-targeted hidden state extractions, we show that direct (single-hop) spatial relations are encoded with high linear separability in the earliest layers (Layer 1 accuracy: 0.715, chance: 0.250), and that this signal degrades monotonically through the network. More strikingly, adding a single intermediate reasoning hop causes probe accuracy to collapse from 0.715 to 0.344 at Layer 1 — a drop of 0.371 — and all multi-hop conditions (k ≥ 2) remain near chance across all layers. We further show that extraction strategy matters more than dataset choice: mean-pooling over the full sequence yields flat, near-chance curves regardless of layer, while entity-targeted extraction (concatenating hidden states at the subject and object entity positions) recovers strong spatial signal for k=1. These findings suggest that Pythia encodes direct spatial relations linearly and early, but compositional spatial reasoning does not produce linearly-readable traces in individual entity representations at any network depth.
+We investigate how spatial directional relations are encoded in the internal representations of a large language model (Pythia-2.8B) across all 32 transformer layers. Using linear probing classifiers trained on entity-targeted hidden state extractions, we show that direct (single-hop) spatial relations are encoded with high linear separability in the earliest layers (Layer 1 accuracy: 0.715, chance: 0.250), and that this signal degrades monotonically through the network. More strikingly, adding a single intermediate reasoning hop causes probe accuracy to collapse from 0.715 to 0.344 at Layer 1 (a drop of 0.371), and all multi-hop conditions (k ≥ 2) remain near chance across all layers. We further show that the extraction strategy matters more than dataset choice: mean-pooling over the full sequence yields flat, near-chance curves regardless of layer, while entity-targeted extraction (concatenating hidden states at the subject and object entity positions) recovers a strong spatial signal for k=1. These findings suggest that Pythia encodes direct spatial relations linearly and early, but compositional spatial reasoning does not produce linearly-readable traces in individual entity representations at any network depth.
 
 
  ## 1. Introduction
@@ -73,10 +73,14 @@ For the StepGame entity-targeted setting, we additionally stratify examples by `
 | Chance | StepGame | 4 | 0.250 | — | — |
  
 Mean-pooling over the full sequence yields flat curves hovering near the majority-class baseline for SpaRTUN and near chance for StepGame. Entity-targeted extraction recovers a strong and structured signal, particularly for k=1 examples.
- 
+
+ [Spatial Probe Accuracy in SpaRTUN](Figures/SpatialProbeAcconSpartrun.png)
+ [Spatial Probe Accuracy in StepGame](Figures/SpatialProbeAccuracyStepGame.png)
 ### 4.2 Layer-wise Probe Curve (k=1)
  
-For single-hop StepGame examples, Layer 1 achieves 0.715 accuracy — nearly three times chance. The curve declines monotonically and smoothly to 0.636 at Layer 32. There is no mid-network peak; the model does not appear to build up spatial encoding progressively, the signal is strongest at the bottom, and eroded through subsequent computation.
+For single-hop StepGame examples, Layer 1 achieves 0.715 accuracy. The curve declines monotonically and smoothly to 0.636 at Layer 32. There is no mid-network peak; the model does not appear to build up spatial encoding progressively, the signal is strongest at the bottom, and eroded through subsequent computation.
+
+ [Spatial Probe Accuracy by layer and hop depth in StepGame](Figures/HoppingbyLayer.png)
  
 ### 4.3 Hop-Depth Analysis
  
@@ -90,7 +94,7 @@ For single-hop StepGame examples, Layer 1 achieves 0.715 accuracy — nearly thr
 | — | — | chance: 0.250 | — | — | — |
  
 The k=1 curve is entirely separated from k≥2. Adding one intermediate hop causes a 0.371 drop in L1 accuracy, and all multi-hop conditions remain near or below chance across all 32 layers. The k=5 condition exhibits a tentative late peak (L28: 0.326), indicating that very long chains may accumulate a slight signal in deeper layers; however, the sample size (n=213) limits confidence in this observation.
- 
+ [Hop-Depth Analysis](Figures/Hop-Depth Exp.png)
 ---
 
 ## 5. Discussion
@@ -99,13 +103,16 @@ The k=1 curve is entirely separated from k≥2. Adding one intermediate hop caus
  
 **Deeper layers transform rather than preserve this signal.**:  The monotonic decline from L1 to L32 (0.715 → 0.636 for k=1) suggests that later layers are transforming the early encoding into a format suited to next-token prediction, which is geometrically less clean for a direction-classification probe.
  
-**Compositional spatial reasoning is not linearly readable from entity tokens.**: The collapse at k=2 is the central finding. The model cannot compose even a two-hop spatial chain into a linearly-decodable relation at the individual entity token positions. This does not mean the model fails at multi-hop spatial reasoning. It means the answer is not stored *there*. Future work should examine alternative extraction points: intermediate entity tokens in the chain, or sequence-level representations conditioned on the explicit question.
+**Compositional spatial reasoning is not linearly readable from entity tokens.**: The collapse at k=2 is the central finding. The model cannot compose even a two-hop spatial chain into a linearly-decodable relation at the individual entity token positions. This does not mean the model fails at multi-hop spatial reasoning. It means the answer is not stored *there*. 
  
 **Extraction strategy is the critical methodological decision.** The jump from 0.354 (mean-pool) to 0.715 (entity-targeted, k=1) on the same dataset and model shows that *where* you extract from matters far more than which dataset or model you use. Probing studies that rely on sentence-level representations may be systematically underestimating the spatial encoding capacity of LLMs.
+
+## References
  
-### Limitations
- 
-- Results are from a single model family (Pythia-2.8B). Replication on GPT-2-XL or Llama-family models would strengthen generalisability claims.
-- The k=5 late-peak observation is based on n=213 examples and should be treated as a hypothesis for future work.
-- SpaRTUN results are complicated by class imbalance; the majority-class baseline (0.54) exceeds Layer 1 probe accuracy (0.537), limiting interpretability for that dataset.
+- Shi, Z., Zhang, Q., & Lipani, A. (2022). StepGame: A New Benchmark for Robust Multi-Hop Spatial Reasoning in Texts. *AAAI 2022*.
+- Mirzaee, R., Faghihi, H. R., Ning, Q., & Kordjamshidi, P. (2021). SPARTQA: A Textual Question Answering Benchmark for Spatial Reasoning. *NAACL 2021*.
+- Rizvi, M. I., Zhu, X., & Gurevych, I. (2024). SpaRC and SpaRP: Spatial Reasoning Characterization and Path Generation for Understanding Spatial Reasoning Capability of Large Language Models. *ACL 2024*.
+- Biderman, S. et al. (2023). Pythia: A Suite for Analyzing Large Language Models Across Training and Scaling. *ICML 2023*.
+- Alain, G., & Bengio, Y. (2016). Understanding Intermediate Layers Using Linear Classifier Probes. *ICLR Workshop 2017*.
+- Belrose, N. et al. (2023). Eliciting Latent Predictions from Transformers with the Tuned Lens. *arXiv:2303.08112*.
 
