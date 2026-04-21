@@ -75,7 +75,11 @@ For the StepGame entity-targeted setting, we additionally stratify examples by `
 Mean-pooling over the full sequence yields flat curves hovering near the majority-class baseline for SpaRTUN and near chance for StepGame. Entity-targeted extraction recovers a strong and structured signal, particularly for k=1 examples.
 
  [Spatial Probe Accuracy in SpaRTUN](Figures/SpatialProbeAcconSpartrun.png)
+
+ 
  [Spatial Probe Accuracy in StepGame](Figures/SpatialProbeAccuracyStepGame.png)
+
+ 
 ### 4.2 Layer-wise Probe Curve (k=1)
  
 For single-hop StepGame examples, Layer 1 achieves 0.715 accuracy. The curve declines monotonically and smoothly to 0.636 at Layer 32. There is no mid-network peak; the model does not appear to build up spatial encoding progressively, the signal is strongest at the bottom, and eroded through subsequent computation.
@@ -95,6 +99,8 @@ For single-hop StepGame examples, Layer 1 achieves 0.715 accuracy. The curve dec
 
 
 The k=1 curve is entirely separated from k≥2. Adding one intermediate hop causes a 0.371 drop in L1 accuracy, and all multi-hop conditions remain near or below chance across all 32 layers. The k=5 condition exhibits a tentative late peak (L28: 0.326), indicating that very long chains may accumulate a slight signal in deeper layers; however, the sample size (n=213) limits confidence in this observation.
+
+
 [Hop-Depth Analysis](Figures/Hop-Depth Exp.png)
 
 ## 5. Discussion
